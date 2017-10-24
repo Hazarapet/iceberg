@@ -232,10 +232,10 @@ def model(weights_path=None):
 
         return model
 
-    _input = Input((3, 64, 64))
-    _m = ResNet50(include_top=False, input_tensor=_input, input_shape=(3, 64, 64))
+    _input = Input((2, 75, 75))
+    _m = ResNet50(include_top=False, input_tensor=_input, input_shape=(2, 75, 75))
 
-    _m.load_weights('models/resnet50/structures/resnet50_weights_th_dim_ordering_th_kernels_notop.h5')
+    # _m.load_weights('models/resnet50/structures/resnet50_weights_th_dim_ordering_th_kernels_notop.h5')
 
     # # 175 layers
     for i, layer in enumerate(_m.layers):
@@ -246,8 +246,8 @@ def model(weights_path=None):
 
     x = _m.output
 
-    x = Dense(10, name='my_output_dense')(x)
-    x = Activation('softmax', name='my_output')(x)
+    x = Dense(1, name='my_output_dense')(x)
+    x = Activation('sigmoid', name='my_output')(x)
 
     _model = Model(inputs=_m.input, outputs=x)
 

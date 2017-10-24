@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import pandas as pd
 
 
 def iterate_minibatches(inputs, batchsize=10):
@@ -10,6 +11,13 @@ def iterate_minibatches(inputs, batchsize=10):
 
     if len(inputs) % batchsize != 0:
         yield np.array(inputs)[- (len(inputs) % batchsize):]
+
+
+def load_and_format(in_path):
+    out_df = pd.read_json(in_path)
+    out_images = out_df.apply(lambda c_row: [np.stack([c_row['band_1'], c_row['band_2']], -1).reshape((2, 75, 75))], 1)
+    out_images = np.stack(out_images).squeeze()
+    return out_images
 
 
 def aug(array, input):
