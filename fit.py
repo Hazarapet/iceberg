@@ -10,14 +10,16 @@ from keras import callbacks as keras_cb
 from models.resnet50.cresnet50 import model
 
 st_time = time.time()
-BATCH_SIZE = 100
+BATCH_SIZE = 300
+WIDTH = 75
+HEIGHT = 75
 N_EPOCH = 100
 REG = 1e-4
 DP = 0.5
 
 # Read in our input data
-df_train = load_and_format('resource/train_split.json')
-df_val = load_and_format('resource/val_split.json')
+df_train = pd.read_json('resource/train_split.json')
+df_val = pd.read_json('resource/val_split.json')
 
 # This prints out (rows, columns)
 print 'df_train shape:', df_train.shape
@@ -26,14 +28,20 @@ print 'df_val shape:', df_val.shape
 y_train = np.array(df_train['is_iceberg'].values)
 y_val = np.array(df_val['is_iceberg'].values)
 
-x_train = np.array(df_train.drop(['is_iceberg', 'inc_angle', 'id'], axis=1).values)
-x_val = np.array(df_val.drop(['is_iceberg', 'inc_angle', 'id'], axis=1).values)
+################################################################
+x_train = df_train.drop(['is_iceberg', 'inc_angle', 'id'], axis=1)
+x_val = df_val.drop(['is_iceberg', 'inc_angle', 'id'], axis=1)
 
+x_train = x_train.apply(lambda c_row: [np.stack([c_row['band_1'], c_row['band_2']], -1).reshape((2, 75, 75))], 1)
+x_val = x_val.apply(lambda c_row: [np.stack([c_row['band_1'], c_row['band_2']], -1).reshape((2, 75, 75))], 1)
+
+x_train = np.stack(x_train).squeeze()
+x_val = np.stack(x_val).squeeze()
+################################################################
 
 print '\nx_train shape:', x_train.shape
 print 'x_val shape:', x_val.shape
 
-sys.exit()
 print 'model loading...'
 [model, structure] = model()
 
@@ -41,10 +49,10 @@ model.summary()
 plot_model(model, to_file='cresnet50.png', show_shapes=True)
 
 adam = Adam(lr=1e-4, decay=1e-5)
-sgd = SGD(lr=1e-3, momentum=.9, decay=1e-5)
+sgd = SGD(lr=1e-1, momentum=.9, decay=1e-5)
 
 model.compile(loss='binary_crossentropy',
-              optimizer=adam,
+              optimizer=sgd,
               metrics=['accuracy'])
 
 rm_cb = keras_cb.RemoteMonitor()
@@ -60,7 +68,7 @@ print('\nVal Loss: {:.5f}, Val Acc: {:.5f}'.format(v_loss, v_acc))
 # create file name to save the state with useful information
 timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
 model_filename = structure + \
-                 '-val_l:' + str(round(v_loss, 4)) + \
+                 'val_l:' + str(round(v_loss, 4)) + \
                  '-val_acc:' + str(round(v_acc, 4)) + \
                  '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
 

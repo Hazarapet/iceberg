@@ -217,9 +217,9 @@ def model(weights_path=None):
         x = identity_block(x, 3, [512, 512, 2048], stage=5, block='b')
         x = identity_block(x, 3, [512, 512, 2048], stage=5, block='c')
 
+        # x = AveragePooling2D((3, 3), name='avg_pool')(x)
+        # x = Flatten()(x)
         x = GlobalAveragePooling2D()(x)
-
-        x = Dropout(0.2)(x)
 
         # Ensure that the model takes into account
         # any potential predecessors of `input_tensor`.
@@ -238,11 +238,11 @@ def model(weights_path=None):
     # _m.load_weights('models/resnet50/structures/resnet50_weights_th_dim_ordering_th_kernels_notop.h5')
 
     # # 175 layers
-    for i, layer in enumerate(_m.layers):
-        if i > 150:
-            break
-
-        layer.trainable = False
+    # for i, layer in enumerate(_m.layers):
+    #     if i > 150:
+    #         break
+    #
+    #     layer.trainable = False
 
     x = _m.output
 
