@@ -3,17 +3,17 @@ import time
 import json
 import numpy as np
 import pandas as pd
-from utils.common import load_and_format
 from keras.utils import plot_model
 from keras.optimizers import SGD, Adam
 from keras import callbacks as keras_cb
-from models.resnet50.cresnet50 import model
+from models.model.simple import model as simple
+from models.resnet50.cresnet50 import model as cres_model
 
 st_time = time.time()
-BATCH_SIZE = 300
+BATCH_SIZE = 1000
 WIDTH = 75
 HEIGHT = 75
-N_EPOCH = 100
+N_EPOCH = 600
 REG = 1e-4
 DP = 0.5
 
@@ -43,13 +43,13 @@ print '\nx_train shape:', x_train.shape
 print 'x_val shape:', x_val.shape
 
 print 'model loading...'
-[model, structure] = model()
+[model, structure] = simple()
 
 model.summary()
-plot_model(model, to_file='cresnet50.png', show_shapes=True)
+plot_model(model, to_file='simple.png', show_shapes=True)
 
-adam = Adam(lr=1e-4, decay=1e-5)
-sgd = SGD(lr=1e-1, momentum=.9, decay=1e-5)
+adam = Adam(lr=1e-3, decay=1e-5)
+sgd = SGD(lr=6e-3, momentum=.9, decay=1e-5)
 
 model.compile(loss='binary_crossentropy',
               optimizer=sgd,
@@ -65,19 +65,15 @@ print('================= Validation =================')
 print('\nVal Loss: {:.5f}, Val Acc: {:.5f}'.format(v_loss, v_acc))
 
 
-# create file name to save the state with useful information
-timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
-model_filename = structure + \
-                 'val_l:' + str(round(v_loss, 4)) + \
-                 '-val_acc:' + str(round(v_acc, 4)) + \
-                 '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
-
-# saving the weights
-model.save_weights(model_filename + '.h5')
-
-with open(model_filename + '.json', 'w') as outfile:
-    json_string = model.to_json()
-    json.dump(json_string, outfile)
+# # create file name to save the state with useful information
+# timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
+# model_filename = structure + \
+#                  'val_l:' + str(round(v_loss, 4)) + \
+#                  '-val_acc:' + str(round(v_acc, 4)) + \
+#                  '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
+#
+# # saving the weights
+# model.save_weights(model_filename + '.h5')
 
 
 print('\n{:.2f}m Runtime'.format((time.time() - st_time) / 60))

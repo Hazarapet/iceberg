@@ -187,24 +187,24 @@ def model(weights_path=None):
 
         bn_axis = 1
 
-        # 32x32
+        # 38x38
         x = Conv2D(64, (7, 7), strides=(2, 2), padding='same', name='conv1')(img_input)
         x = BatchNormalization(axis=bn_axis, name='bn_conv1')(x)
         x = Activation('relu')(x)
         x = MaxPooling2D((3, 3), strides=(2, 2))(x)
 
-        # 16x16
+        # 18x18
         x = conv_block(x, 3, [64, 64, 256], stage=2, block='a', strides=(1, 1))
         x = identity_block(x, 3, [64, 64, 256], stage=2, block='b')
         x = identity_block(x, 3, [64, 64, 256], stage=2, block='c')
 
-        # 8x8
+        # 9x9
         x = conv_block(x, 3, [128, 128, 512], stage=3, block='a')
         x = identity_block(x, 3, [128, 128, 512], stage=3, block='b')
         x = identity_block(x, 3, [128, 128, 512], stage=3, block='c')
         x = identity_block(x, 3, [128, 128, 512], stage=3, block='d')
 
-        # 4x4
+        # 5x5
         x = conv_block(x, 3, [256, 256, 1024], stage=4, block='a')
         x = identity_block(x, 3, [256, 256, 1024], stage=4, block='b')
         x = identity_block(x, 3, [256, 256, 1024], stage=4, block='c')
@@ -212,13 +212,11 @@ def model(weights_path=None):
         x = identity_block(x, 3, [256, 256, 1024], stage=4, block='e')
         x = identity_block(x, 3, [256, 256, 1024], stage=4, block='f')
 
-        # 2x2
+        # 3x3
         x = conv_block(x, 3, [512, 512, 2048], stage=5, block='a')
         x = identity_block(x, 3, [512, 512, 2048], stage=5, block='b')
         x = identity_block(x, 3, [512, 512, 2048], stage=5, block='c')
 
-        # x = AveragePooling2D((3, 3), name='avg_pool')(x)
-        # x = Flatten()(x)
         x = GlobalAveragePooling2D()(x)
 
         # Ensure that the model takes into account
