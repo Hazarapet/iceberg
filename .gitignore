@@ -1,0 +1,8 @@
+.idea/
+*~
+*.pyc
+*/*.pyc
+*.log
+resource/
+models/*/structures/
+train_tmp/
