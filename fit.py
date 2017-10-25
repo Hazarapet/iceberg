@@ -3,6 +3,7 @@ import time
 import json
 import numpy as np
 import pandas as pd
+from utils import common
 from keras.utils import plot_model
 from keras.optimizers import SGD, Adam
 from keras import callbacks as keras_cb
@@ -29,14 +30,21 @@ y_train = np.array(df_train['is_iceberg'].values)
 y_val = np.array(df_val['is_iceberg'].values)
 
 ################################################################
-x_train = df_train.drop(['is_iceberg', 'inc_angle', 'id'], axis=1)
-x_val = df_val.drop(['is_iceberg', 'inc_angle', 'id'], axis=1)
+x_train = df_train.drop(['is_iceberg', 'id'], axis=1)
+x_val = df_val.drop(['is_iceberg', 'id'], axis=1)
 
 x_train = x_train.apply(lambda c_row: [np.stack([c_row['band_1'], c_row['band_2']], -1).reshape((2, 75, 75))], 1)
 x_val = x_val.apply(lambda c_row: [np.stack([c_row['band_1'], c_row['band_2']], -1).reshape((2, 75, 75))], 1)
 
 x_train = np.stack(x_train).squeeze()
 x_val = np.stack(x_val).squeeze()
+
+count = 0
+for x, y in zip(x_train, y_train):
+    x_train, y_train = common.aug(x_train, y_train, x, y)
+    count += 1
+    print 'count: {}'.format(count)
+
 ################################################################
 
 print '\nx_train shape:', x_train.shape
@@ -52,13 +60,21 @@ adam = Adam(lr=1e-3, decay=1e-5)
 sgd = SGD(lr=6e-3, momentum=.9, decay=1e-5)
 
 model.compile(loss='binary_crossentropy',
-              optimizer=sgd,
+              optimizer=adam,
               metrics=['accuracy'])
+
+################################################################
+def schedule(epoch):
+    if epoch % 40 == 0:
+        epoch /= 10
+
+    return epoch
 
 rm_cb = keras_cb.RemoteMonitor()
 ers_cb = keras_cb.EarlyStopping(patience=20)
+lr_cb = keras_cb.LearningRateScheduler(schedule)
 
-model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=N_EPOCH, batch_size=BATCH_SIZE, callbacks=[rm_cb, ers_cb], shuffle=True)
+model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=N_EPOCH, batch_size=BATCH_SIZE, callbacks=[rm_cb, lr_cb], shuffle=True)
 
 print('================= Validation =================')
 [v_loss, v_acc] = model.evaluate(x_val, y_val, batch_size=BATCH_SIZE, verbose=1)
