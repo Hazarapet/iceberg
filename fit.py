@@ -71,7 +71,7 @@ model.compile(loss='binary_crossentropy',
 
 def schedule(epoch):
     lr = K.get_value(model.optimizer.lr)
-    return lr * (0.1 ** int(epoch / 100))
+    return lr * (0.1 ** int(epoch / 50))
 
 rm_cb = keras_cb.RemoteMonitor()
 ers_cb = keras_cb.EarlyStopping(patience=20)
