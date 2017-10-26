@@ -22,13 +22,13 @@ def load_and_format(in_path):
 
 def aug(x_array, y_array, x, y):
     # input's shape (cn, w, h)
-    rn1 = np.random.randint(0, 12)
-    rn2 = np.random.randint(x.shape[1] - 12, x.shape[1])  # this is much better
+    # rn1 = np.random.randint(0, 12)
+    # rn2 = np.random.randint(x.shape[1] - 12, x.shape[1])  # this is much better
 
     # rotate 90
-    # rt90 = np.rot90(x, 1, axes=(1, 2))
-    # x_array = np.concatenate((x_array, [rt90]))
-    # y_array = np.concatenate((y_array, [y]))
+    rt90 = np.rot90(x, 1, axes=(1, 2))
+    x_array = np.concatenate((x_array, [rt90]))
+    y_array = np.concatenate((y_array, [y]))
 
     # flip h
     flip_h = np.flip(x, 2)
@@ -36,25 +36,25 @@ def aug(x_array, y_array, x, y):
     y_array = np.concatenate((y_array, [y]))
 
     # flip v
-    flip_v = np.flip(x, 1)
-    x_array = np.concatenate((x_array, [flip_v]))
-    y_array = np.concatenate((y_array, [y]))
+    # flip_v = np.flip(x, 1)
+    # x_array = np.concatenate((x_array, [flip_v]))
+    # y_array = np.concatenate((y_array, [y]))
 
     # random crop with 32px shift
     # TODO Kind of overfiting technique
-    crop = x.transpose((1, 2, 0))
-    crop = cv2.resize(crop[rn1:rn2, rn1:rn2], (crop.shape[0], crop.shape[1]))
-    crop = crop.transpose((2, 0, 1))
-    x_array = np.concatenate((x_array, [crop]))
-    y_array = np.concatenate((y_array, [y]))
-
-    # rotate 90, flip v
+    # crop = x.transpose((1, 2, 0))
+    # crop = cv2.resize(crop[rn1:rn2, rn1:rn2], (crop.shape[0], crop.shape[1]))
+    # crop = crop.transpose((2, 0, 1))
+    # x_array = np.concatenate((x_array, [crop]))
+    # y_array = np.concatenate((y_array, [y]))
+    #
+    # # rotate 90, flip v
     # rot90_flip_v = np.rot90(flip_v, 1, axes=(1, 2))
-
-    # rotate 90, flip h
-    rot90_flip_h = np.rot90(flip_h, 1, axes=(1, 2))
-    x_array = np.concatenate((x_array, [rot90_flip_h]))
-    y_array = np.concatenate((y_array, [y]))
+    #
+    # # rotate 90, flip h
+    # rot90_flip_h = np.rot90(flip_h, 1, axes=(1, 2))
+    # x_array = np.concatenate((x_array, [rot90_flip_h]))
+    # y_array = np.concatenate((y_array, [y]))
 
     return x_array, y_array
 

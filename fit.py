@@ -4,6 +4,7 @@ import json
 import numpy as np
 import pandas as pd
 from utils import common
+from keras import backend as K
 from keras.utils import plot_model
 from keras.optimizers import SGD, Adam
 from keras import callbacks as keras_cb
@@ -11,12 +12,12 @@ from models.model.simple import model as simple
 from models.resnet50.cresnet50 import model as cres_model
 
 st_time = time.time()
-BATCH_SIZE = 1000
+BATCH_SIZE = 300
 WIDTH = 75
 HEIGHT = 75
-N_EPOCH = 600
+N_EPOCH = 400
+AUGMENT = True
 REG = 1e-4
-DP = 0.5
 
 # Read in our input data
 df_train = pd.read_json('resource/train_split.json')
@@ -33,17 +34,19 @@ y_val = np.array(df_val['is_iceberg'].values)
 x_train = df_train.drop(['is_iceberg', 'id'], axis=1)
 x_val = df_val.drop(['is_iceberg', 'id'], axis=1)
 
-x_train = x_train.apply(lambda c_row: [np.stack([c_row['band_1'], c_row['band_2']], -1).reshape((2, 75, 75))], 1)
-x_val = x_val.apply(lambda c_row: [np.stack([c_row['band_1'], c_row['band_2']], -1).reshape((2, 75, 75))], 1)
+x_train = x_train.apply(lambda c_row: [np.stack([c_row['band_1'], c_row['band_2']]).reshape((2, 75, 75))], 1)
+x_val = x_val.apply(lambda c_row: [np.stack([c_row['band_1'], c_row['band_2']]).reshape((2, 75, 75))], 1)
 
-x_train = np.stack(x_train).squeeze()
-x_val = np.stack(x_val).squeeze()
+x_train = np.stack(x_train).squeeze().astype(np.float32)
+x_val = np.stack(x_val).squeeze().astype(np.float32)
 
-count = 0
-for x, y in zip(x_train, y_train):
-    x_train, y_train = common.aug(x_train, y_train, x, y)
-    count += 1
-    print 'count: {}'.format(count)
+if AUGMENT:
+    count = 0
+    for x, y in zip(x_train, y_train):
+        x_train, y_train = common.aug(x_train, y_train, x, y)
+        count += 1
+        print 'count: {}'.format(count)
+
 
 ################################################################
 
@@ -64,15 +67,17 @@ model.compile(loss='binary_crossentropy',
               metrics=['accuracy'])
 
 ################################################################
-def schedule(epoch):
-    if epoch % 40 == 0:
-        epoch /= 10
 
-    return epoch
+
+def schedule(epoch):
+    lr = K.get_value(model.optimizer.lr)
+    return lr * (0.1 ** int(epoch / 100))
 
 rm_cb = keras_cb.RemoteMonitor()
 ers_cb = keras_cb.EarlyStopping(patience=20)
 lr_cb = keras_cb.LearningRateScheduler(schedule)
+
+################################################################
 
 model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=N_EPOCH, batch_size=BATCH_SIZE, callbacks=[rm_cb, lr_cb], shuffle=True)
 
