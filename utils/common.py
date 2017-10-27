@@ -52,9 +52,9 @@ def aug(x_array, y_array, x, y):
     # rot90_flip_v = np.rot90(flip_v, 1, axes=(1, 2))
     #
     # # rotate 90, flip h
-    rot90_flip_h = np.rot90(flip_h, 1, axes=(1, 2))
-    x_array = np.concatenate((x_array, [rot90_flip_h]))
-    y_array = np.concatenate((y_array, [y]))
+    # rot90_flip_h = np.rot90(flip_h, 1, axes=(1, 2))
+    # x_array = np.concatenate((x_array, [rot90_flip_h]))
+    # y_array = np.concatenate((y_array, [y]))
 
     return x_array, y_array
 

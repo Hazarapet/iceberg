@@ -68,7 +68,7 @@ def model(weights_path=None):
     _concat = layers.concatenate([_img_1, _img_2], name='model_concat_1')
     # _concat = _img_1
 
-    _dense_1 = Dense(32, kernel_regularizer=l2(1e-4), name="dense_1")(_concat)
+    _dense_1 = Dense(64, kernel_regularizer=l2(1e-4), name="dense_1")(_concat)
     _dense_1 = BatchNormalization(axis=1, name="dense_1_bn_1")(_dense_1)
     _dense_1 = Activation(act, name="dense_1_act_1")(_dense_1)
     _dense_1 = Dropout(dp, name="dense_1_dp_1")(_dense_1)

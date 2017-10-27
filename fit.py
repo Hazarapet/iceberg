@@ -75,10 +75,10 @@ model.compile(loss='binary_crossentropy',
 
 def schedule(epoch):
     lr = K.get_value(model.optimizer.lr) # this is the current learning rate
-    return lr * (0.5 ** (1 * (int(epoch % 40) == 0)))
+    return lr * (0.5 ** (1 * (int(epoch % 50) == 0)))
 
 rm_cb = keras_cb.RemoteMonitor()
-ers_cb = keras_cb.EarlyStopping(patience=20)
+ers_cb = keras_cb.EarlyStopping(patience=40)
 lr_cb = keras_cb.LearningRateScheduler(schedule)
 
 ################################################################
