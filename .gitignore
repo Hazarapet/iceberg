@@ -6,3 +6,4 @@
 resource/
 models/*/structures/
 train_tmp/
+visual/

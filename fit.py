@@ -41,8 +41,8 @@ x_train = np.stack(x_train).squeeze().astype(np.float32)
 x_val = np.stack(x_val).squeeze().astype(np.float32)
 
 # adding new channels as new features
-x_train = np.concatenate([x_train, (x_train[:, 0] - x_train[:, 1])[:, np.newaxis, :, :] / 2.], axis=1)
-x_val = np.concatenate([x_val, (x_val[:, 0] - x_val[:, 1])[:, np.newaxis, :, :] / 2.], axis=1)
+x_train = np.concatenate([x_train, np.abs(x_train[:, 0] - x_train[:, 1])[:, np.newaxis, :, :] / 2.], axis=1)
+x_val = np.concatenate([x_val, np.abs(x_val[:, 0] - x_val[:, 1])[:, np.newaxis, :, :] / 2.], axis=1)
 
 if AUGMENT:
     count = 0
@@ -83,22 +83,22 @@ lr_cb = keras_cb.LearningRateScheduler(schedule)
 
 ################################################################
 
-model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=N_EPOCH, batch_size=BATCH_SIZE, callbacks=[rm_cb, lr_cb], shuffle=True)
+model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=N_EPOCH, batch_size=BATCH_SIZE, callbacks=[rm_cb, lr_cb, ers_cb], shuffle=True)
 
 print('================= Validation =================')
 [v_loss, v_acc] = model.evaluate(x_val, y_val, batch_size=BATCH_SIZE, verbose=1)
 print('\nVal Loss: {:.5f}, Val Acc: {:.5f}'.format(v_loss, v_acc))
 
 
-# # create file name to save the state with useful information
-# timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
-# model_filename = structure + \
-#                  'val_l:' + str(round(v_loss, 4)) + \
-#                  '-val_acc:' + str(round(v_acc, 4)) + \
-#                  '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
-#
-# # saving the weights
-# model.save_weights(model_filename + '.h5')
+# create file name to save the state with useful information
+timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
+model_filename = structure + \
+                 'val_l:' + str(round(v_loss, 4)) + \
+                 '-val_acc:' + str(round(v_acc, 4)) + \
+                 '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
+
+# saving the weights
+model.save_weights(model_filename + '.h5')
 
 
 print('\n{:.2f}m Runtime'.format((time.time() - st_time) / 60))
