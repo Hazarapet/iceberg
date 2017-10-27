@@ -40,6 +40,10 @@ x_val = x_val.apply(lambda c_row: [np.stack([c_row['band_1'], c_row['band_2']]).
 x_train = np.stack(x_train).squeeze().astype(np.float32)
 x_val = np.stack(x_val).squeeze().astype(np.float32)
 
+# adding new channels as new features
+x_train = np.concatenate([x_train, (x_train[:, 0] - x_train[:, 1])[:, np.newaxis, :, :] / 2.], axis=1)
+x_val = np.concatenate([x_val, (x_val[:, 0] - x_val[:, 1])[:, np.newaxis, :, :] / 2.], axis=1)
+
 if AUGMENT:
     count = 0
     for x, y in zip(x_train, y_train):
@@ -70,8 +74,8 @@ model.compile(loss='binary_crossentropy',
 
 
 def schedule(epoch):
-    lr = K.get_value(model.optimizer.lr)
-    return lr * (0.1 ** int(epoch / 50))
+    lr = K.get_value(model.optimizer.lr) # this is the current learning rate
+    return lr * (0.5 ** (1 * (int(epoch % 40) == 0)))
 
 rm_cb = keras_cb.RemoteMonitor()
 ers_cb = keras_cb.EarlyStopping(patience=20)

@@ -8,9 +8,9 @@ from keras.regularizers import l2
 
 
 def model(weights_path=None):
-    act = "relu"
+    act = "elu"
     dp = 0.5
-    _input_1 = Input(shape=(2, 75, 75), name="input_1")
+    _input_1 = Input(shape=(3, 75, 75), name="input_1")
     # _input_2 = Input(shape=(1,), name="input_2")
 
     _img_1 = Conv2D(16, (3, 3), name="img_1_conv_1")(_input_1)
@@ -48,7 +48,7 @@ def model(weights_path=None):
 
     _img_1 = GlobalMaxPooling2D()(_img_1)
 
-    _img_2 = Conv2D(64, (3, 3), name="img_2_conv_1")(_input_1)
+    _img_2 = Conv2D(128, (3, 3), name="img_2_conv_1")(_input_1)
     _img_2 = BatchNormalization(axis=1, name="img_2_bn_1")(_img_2)
     _img_2 = Activation(act, name="img_2_act_1")(_img_2)
 
