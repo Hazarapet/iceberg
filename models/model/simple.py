@@ -44,11 +44,11 @@ def model(weights_path=None):
     _img_1 = BatchNormalization(axis=1, name="img_1_bn_6")(_img_1)
     _img_1 = Activation(act, name="img_1_act_6")(_img_1)
 
-    _img_1 = Conv2D(128, (3, 3), name="img_1_conv_6")(_img_1)
-    _img_1 = BatchNormalization(axis=1, name="img_1_bn_6")(_img_1)
-    _img_1 = Activation(act, name="img_1_act_6")(_img_1)
+    _img_1 = Conv2D(128, (3, 3), name="img_1_conv_7")(_img_1)
+    _img_1 = BatchNormalization(axis=1, name="img_1_bn_7")(_img_1)
+    _img_1 = Activation(act, name="img_1_act_7")(_img_1)
 
-    _img_1 = MaxPooling2D((2, 2), name="img_1_pool_3")(_img_1)
+    _img_1 = MaxPooling2D((2, 2), name="img_1_pool_7")(_img_1)
     _img_1 = Dropout(dp, name="img_1_dp_3")(_img_1)
 
     _img_1 = GlobalMaxPooling2D()(_img_1)

@@ -75,7 +75,7 @@ model.summary()
 plot_model(model, to_file='simple.png', show_shapes=True)
 
 adam = Adam(lr=1e-3, decay=1e-5)
-sgd = SGD(lr=1e-2, momentum=.9, decay=1e-5)
+sgd = SGD(lr=6e-2, momentum=.9, decay=1e-5)
 
 model.compile(loss='binary_crossentropy',
               optimizer=sgd,
@@ -85,8 +85,8 @@ model.compile(loss='binary_crossentropy',
 
 
 def schedule(epoch):
-    lr = K.get_value(model.optimizer.lr) # this is the current learning rate
-    return lr * (0.5 ** (1 * (int(epoch % 50) == 0)))
+    lr = K.get_value(model.optimizer.lr)  # this is the current learning rate
+    return lr * (0.5 ** (1 * (int(epoch % 40) == 0)))
 
 rm_cb = keras_cb.RemoteMonitor()
 ers_cb = keras_cb.EarlyStopping(patience=40)
