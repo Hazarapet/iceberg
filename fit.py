@@ -75,10 +75,10 @@ model.summary()
 plot_model(model, to_file='simple.png', show_shapes=True)
 
 adam = Adam(lr=1e-3, decay=1e-5)
-sgd = SGD(lr=6e-3, momentum=.9, decay=1e-5)
+sgd = SGD(lr=1e-2, momentum=.9, decay=1e-5)
 
 model.compile(loss='binary_crossentropy',
-              optimizer=adam,
+              optimizer=sgd,
               metrics=['accuracy'])
 
 ################################################################

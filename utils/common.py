@@ -26,10 +26,10 @@ def aug(x_array, angle_array, y_array, x, a, y):
     rn2 = np.random.randint(x.shape[1] - 12, x.shape[1])  # this is much better
 
     # rotate 90
-    rt90 = np.rot90(x, 1, axes=(1, 2))
-    x_array = np.concatenate((x_array, [rt90]))
-    y_array = np.concatenate((y_array, [y]))
-    angle_array = np.concatenate((angle_array, [a]))
+    # rt90 = np.rot90(x, 1, axes=(1, 2))
+    # x_array = np.concatenate((x_array, [rt90]))
+    # y_array = np.concatenate((y_array, [y]))
+    # angle_array = np.concatenate((angle_array, [a]))
 
     # flip h
     flip_h = np.flip(x, 2)
@@ -43,7 +43,7 @@ def aug(x_array, angle_array, y_array, x, a, y):
     # y_array = np.concatenate((y_array, [y]))
 
     # random crop with 32px shift
-    # TODO Kind of overfiting technique
+    # TODO Kind of overfit preventing technique
     crop = x.transpose((1, 2, 0))
     crop = cv2.resize(crop[rn1:rn2, rn1:rn2], (crop.shape[0], crop.shape[1]))
     crop = crop.transpose((2, 0, 1))
