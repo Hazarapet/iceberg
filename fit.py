@@ -73,11 +73,11 @@ print 'model loading...'
 model.summary()
 plot_model(model, to_file='simple.png', show_shapes=True)
 
-adam = Adam(lr=1e-3, decay=1e-5)
+adam = Adam(lr=1e-3, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
 sgd = SGD(lr=1e-1, momentum=.9, decay=1e-5)
 
 model.compile(loss='binary_crossentropy',
-              optimizer=sgd,
+              optimizer=adam,
               metrics=['accuracy'])
 
 ################################################################
@@ -88,7 +88,7 @@ def schedule(epoch):
     return lr * (0.5 ** (1 * (int(epoch % 40) == 0)))
 
 rm_cb = keras_cb.RemoteMonitor()
-ers_cb = keras_cb.EarlyStopping(patience=60)
+ers_cb = keras_cb.EarlyStopping(patience=40)
 lr_cb = keras_cb.LearningRateScheduler(schedule)
 
 ################################################################
