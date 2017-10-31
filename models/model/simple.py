@@ -9,7 +9,7 @@ from keras.regularizers import l2
 
 
 def model(weights_path=None):
-    act = "elu"
+    act = "selu"
     dp = 0.5
     _input_1 = Input(shape=(3, 75, 75), name="image_input")
     _input_2 = Input(shape=(1,), name="angle_input")
@@ -49,33 +49,38 @@ def model(weights_path=None):
     # _img_1 = Activation(act, name="img_1_act_7")(_img_1)
 
     _img_1 = MaxPooling2D((2, 2), name="img_1_pool_7")(_img_1)
-    _img_1 = Dropout(dp, name="img_1_dp_3")(_img_1)
 
     _img_1 = GlobalMaxPooling2D()(_img_1)
 
-    _img_2 = Conv2D(128, (3, 3), name="img_2_conv_1")(_input_1)
+    _img_2 = Conv2D(32, (3, 3), name="img_2_conv_1")(_input_1)
     _img_2 = BatchNormalization(axis=1, name="img_2_bn_1")(_img_2)
     _img_2 = Activation(act, name="img_2_act_1")(_img_2)
 
     _img_2 = MaxPooling2D((2, 2), name="img_2_pool_1")(_img_2)
+
+    _img_2 = Conv2D(128, (3, 3), name="img_2_conv_2")(_img_2)
+    _img_2 = BatchNormalization(axis=1, name="img_2_bn_2")(_img_2)
+    _img_2 = Activation(act, name="img_2_act_2")(_img_2)
+
+    _img_2 = MaxPooling2D((2, 2), name="img_2_pool_2")(_img_2)
     _img_2 = Dropout(dp, name="img_2_dp_1")(_img_2)
 
     _img_2 = GlobalMaxPooling2D()(_img_2)
 
     _concat_1 = layers.concatenate([_img_1, _img_2], name='model_concat_1')
 
-    _dense_1 = Dense(128, kernel_regularizer=l2(1e-4), name="dense_1")(_concat_1)
+    _dense_1 = Dense(64, kernel_regularizer=l2(1e-4), name="dense_1")(_concat_1)
     _dense_1 = BatchNormalization(axis=1, name="dense_1_bn_1")(_dense_1)
     _dense_1 = Activation(act, name="dense_1_act_1")(_dense_1)
     _dense_1 = Dropout(dp, name="dense_1_dp_1")(_dense_1)
 
-    _dense_2 = Dense(32, kernel_regularizer=l2(1e-4), name="dense_2")(_dense_1)
+    _dense_2 = Dense(16, kernel_regularizer=l2(1e-4), name="dense_2")(_dense_1)
     _dense_2 = BatchNormalization(axis=1, name="dense_2_bn_1")(_dense_2)
     _dense_2 = Activation(act, name="dense_2_act_1")(_dense_2)
     _dense_2 = Dropout(dp, name="dense_2_dp_1")(_dense_2)
 
-    _value_1 = BatchNormalization(axis=1, name="value_1_bn_1")(_dense_2)
-    _concat_2 = layers.concatenate([_dense_1, _value_1], name='model_concat_2')
+    _value_1 = BatchNormalization(axis=1, name="value_1_bn_1")(_input_2)
+    _concat_2 = layers.concatenate([_dense_2, _value_1], name='model_concat_2')
 
     _output = Dense(1, activation='sigmoid', name="output")(_concat_2)
 

@@ -12,7 +12,7 @@ from models.model.simple import model as simple
 from models.resnet50.cresnet50 import model as cres_model
 
 st_time = time.time()
-BATCH_SIZE = 300
+BATCH_SIZE = 50
 WIDTH = 75
 HEIGHT = 75
 N_EPOCH = 400

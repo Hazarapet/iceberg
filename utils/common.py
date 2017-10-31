@@ -39,7 +39,7 @@ def aug(x_array, angle_array, y_array, x, a, y):
 
     # shift
     shift = x.transpose((1, 2, 0))
-    M = np.float32([[1, 0, rn1], [0, 1, rn2]])
+    M = np.float32([[1, 0, rn1], [0, 1, rn1]])
     shift = cv2.warpAffine(shift, M, (shift.shape[0], shift.shape[1]))
     shift = shift.transpose((2, 0, 1))
     x_array = np.concatenate((x_array, [shift]))
@@ -47,9 +47,10 @@ def aug(x_array, angle_array, y_array, x, a, y):
     angle_array = np.concatenate((angle_array, [a]))
 
     # flip v
-    # flip_v = np.flip(x, 1)
-    # x_array = np.concatenate((x_array, [flip_v]))
-    # y_array = np.concatenate((y_array, [y]))
+    flip_v = np.flip(x, 1)
+    x_array = np.concatenate((x_array, [flip_v]))
+    y_array = np.concatenate((y_array, [y]))
+    angle_array = np.concatenate((angle_array, [a]))
 
     # random crop with 32px shift
     # TODO Kind of overfit preventing technique
