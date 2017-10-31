@@ -75,7 +75,7 @@ model.summary()
 plot_model(model, to_file='simple.png', show_shapes=True)
 
 adam = Adam(lr=1e-3, decay=1e-5)
-sgd = SGD(lr=6e-2, momentum=.9, decay=1e-5)
+sgd = SGD(lr=1e-1, momentum=.9, decay=1e-5)
 
 model.compile(loss='binary_crossentropy',
               optimizer=sgd,
@@ -89,7 +89,7 @@ def schedule(epoch):
     return lr * (0.5 ** (1 * (int(epoch % 40) == 0)))
 
 rm_cb = keras_cb.RemoteMonitor()
-ers_cb = keras_cb.EarlyStopping(patience=40)
+ers_cb = keras_cb.EarlyStopping(patience=60)
 lr_cb = keras_cb.LearningRateScheduler(schedule)
 
 ################################################################
@@ -102,7 +102,7 @@ model.fit([x_train, train_angle], y_train,
           shuffle=True)
 
 print('================= Validation =================')
-[v_loss, v_acc] = model.evaluate(x_val, y_val, batch_size=BATCH_SIZE, verbose=1)
+[v_loss, v_acc] = model.evaluate([x_val, val_angle], y_val, batch_size=BATCH_SIZE, verbose=1)
 print('\nVal Loss: {:.5f}, Val Acc: {:.5f}'.format(v_loss, v_acc))
 
 

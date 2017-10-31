@@ -22,8 +22,8 @@ def load_and_format(in_path):
 
 def aug(x_array, angle_array, y_array, x, a, y):
     # input's shape (cn, w, h)
-    rn1 = np.random.randint(0, 12)
-    rn2 = np.random.randint(x.shape[1] - 12, x.shape[1])  # this is much better
+    rn1 = np.random.randint(0, 16)
+    rn2 = np.random.randint(x.shape[1] - 16, x.shape[1])  # this is much better
 
     # rotate 90
     # rt90 = np.rot90(x, 1, axes=(1, 2))
@@ -34,6 +34,15 @@ def aug(x_array, angle_array, y_array, x, a, y):
     # flip h
     flip_h = np.flip(x, 2)
     x_array = np.concatenate((x_array, [flip_h]))
+    y_array = np.concatenate((y_array, [y]))
+    angle_array = np.concatenate((angle_array, [a]))
+
+    # shift
+    shift = x.transpose((1, 2, 0))
+    M = np.float32([[1, 0, rn1], [0, 1, rn2]])
+    shift = cv2.warpAffine(shift, M, (shift.shape[0], shift.shape[1]))
+    shift = shift.transpose((2, 0, 1))
+    x_array = np.concatenate((x_array, [shift]))
     y_array = np.concatenate((y_array, [y]))
     angle_array = np.concatenate((angle_array, [a]))
 
@@ -50,14 +59,6 @@ def aug(x_array, angle_array, y_array, x, a, y):
     x_array = np.concatenate((x_array, [crop]))
     y_array = np.concatenate((y_array, [y]))
     angle_array = np.concatenate((angle_array, [a]))
-
-    # # rotate 90, flip v
-    # rot90_flip_v = np.rot90(flip_v, 1, axes=(1, 2))
-    #
-    # # rotate 90, flip h
-    # rot90_flip_h = np.rot90(flip_h, 1, axes=(1, 2))
-    # x_array = np.concatenate((x_array, [rot90_flip_h]))
-    # y_array = np.concatenate((y_array, [y]))
 
     return x_array, angle_array, y_array
 
