@@ -47,10 +47,10 @@ def aug(x_array, angle_array, y_array, x, a, y):
     angle_array = np.concatenate((angle_array, [a]))
 
     # flip v
-    flip_v = np.flip(x, 1)
-    x_array = np.concatenate((x_array, [flip_v]))
-    y_array = np.concatenate((y_array, [y]))
-    angle_array = np.concatenate((angle_array, [a]))
+    # flip_v = np.flip(x, 1)
+    # x_array = np.concatenate((x_array, [flip_v]))
+    # y_array = np.concatenate((y_array, [y]))
+    # angle_array = np.concatenate((angle_array, [a]))
 
     # random crop with 32px shift
     # TODO Kind of overfit preventing technique

@@ -12,12 +12,11 @@ from models.model.simple import model as simple
 from models.resnet50.cresnet50 import model as cres_model
 
 st_time = time.time()
-BATCH_SIZE = 50
+BATCH_SIZE = 400
 WIDTH = 75
 HEIGHT = 75
 N_EPOCH = 400
 AUGMENT = True
-REG = 1e-4
 
 # Read in our input data
 df_train = pd.read_json('resource/train_split.json')

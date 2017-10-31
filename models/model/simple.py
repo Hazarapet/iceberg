@@ -58,7 +58,7 @@ def model(weights_path=None):
 
     _img_2 = MaxPooling2D((2, 2), name="img_2_pool_1")(_img_2)
 
-    _img_2 = Conv2D(128, (3, 3), name="img_2_conv_2")(_img_2)
+    _img_2 = Conv2D(64, (3, 3), name="img_2_conv_2")(_img_2)
     _img_2 = BatchNormalization(axis=1, name="img_2_bn_2")(_img_2)
     _img_2 = Activation(act, name="img_2_act_2")(_img_2)
 
@@ -69,7 +69,7 @@ def model(weights_path=None):
 
     _concat_1 = layers.concatenate([_img_1, _img_2], name='model_concat_1')
 
-    _dense_1 = Dense(64, kernel_regularizer=l2(1e-4), name="dense_1")(_concat_1)
+    _dense_1 = Dense(32, kernel_regularizer=l2(1e-4), name="dense_1")(_concat_1)
     _dense_1 = BatchNormalization(axis=1, name="dense_1_bn_1")(_dense_1)
     _dense_1 = Activation(act, name="dense_1_act_1")(_dense_1)
     _dense_1 = Dropout(dp, name="dense_1_dp_1")(_dense_1)
