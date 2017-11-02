@@ -12,7 +12,7 @@ from models.model.simple import model as simple
 from models.resnet50.cresnet50 import model as cres_model
 
 st_time = time.time()
-BATCH_SIZE = 400
+BATCH_SIZE = 100
 WIDTH = 75
 HEIGHT = 75
 N_EPOCH = 400
@@ -73,7 +73,7 @@ print 'model loading...'
 model.summary()
 plot_model(model, to_file='simple.png', show_shapes=True)
 
-adam = Adam(lr=1e-3, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
+adam = Adam(lr=2e-3, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
 sgd = SGD(lr=1e-1, momentum=.9, decay=1e-5)
 
 model.compile(loss='binary_crossentropy',
@@ -85,10 +85,10 @@ model.compile(loss='binary_crossentropy',
 
 def schedule(epoch):
     lr = K.get_value(model.optimizer.lr)  # this is the current learning rate
-    return lr * (0.5 ** (1 * (int(epoch % 40) == 0)))
+    return lr * (0.5 ** (1 * (int(epoch % 50) == 0)))
 
 rm_cb = keras_cb.RemoteMonitor()
-ers_cb = keras_cb.EarlyStopping(patience=40)
+ers_cb = keras_cb.EarlyStopping(patience=20)
 lr_cb = keras_cb.LearningRateScheduler(schedule)
 
 ################################################################

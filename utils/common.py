@@ -37,12 +37,21 @@ def aug(x_array, angle_array, y_array, x, a, y):
     y_array = np.concatenate((y_array, [y]))
     angle_array = np.concatenate((angle_array, [a]))
 
-    # shift
-    shift = x.transpose((1, 2, 0))
-    M = np.float32([[1, 0, rn1], [0, 1, rn1]])
-    shift = cv2.warpAffine(shift, M, (shift.shape[0], shift.shape[1]))
-    shift = shift.transpose((2, 0, 1))
-    x_array = np.concatenate((x_array, [shift]))
+    # shift H
+    shift_h = x.transpose((1, 2, 0))
+    M = np.float32([[1, 0, rn1], [0, 1, 0]])
+    shift_h = cv2.warpAffine(shift_h, M, (shift_h.shape[0], shift_h.shape[1]))
+    shift_h = shift_h.transpose((2, 0, 1))
+    x_array = np.concatenate((x_array, [shift_h]))
+    y_array = np.concatenate((y_array, [y]))
+    angle_array = np.concatenate((angle_array, [a]))
+
+    # shift V
+    shift_v = x.transpose((1, 2, 0))
+    M = np.float32([[1, 0, 0], [0, 1, rn2]])
+    shift_v = cv2.warpAffine(shift_v, M, (shift_v.shape[0], shift_v.shape[1]))
+    shift_v = shift_v.transpose((2, 0, 1))
+    x_array = np.concatenate((x_array, [shift_v]))
     y_array = np.concatenate((y_array, [y]))
     angle_array = np.concatenate((angle_array, [a]))
 
