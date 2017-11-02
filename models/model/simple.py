@@ -18,7 +18,7 @@ def model(weights_path=None):
     def small_conv(filters, _input, count, block):
         for i in range(count):
             _input = BatchNormalization(axis=1, name="img_{}_bn_{}".format(block, i))(_input)
-            _input = Conv2D(filters + gain*(i + 1), (3, 3), padding="same", name="img_{}_conv_{}".format(block, i))(_input)
+            _input = Conv2D(filters + gain * i, (3, 3), padding="same", name="img_{}_conv_{}".format(block, i))(_input)
             _input = Activation(act, name="img_{}_act_{}".format(block, i))(_input)
 
             _input = Dropout(dp, name="img_{}_dp_{}".format(block, i))(_input)
@@ -54,16 +54,18 @@ def model(weights_path=None):
         return _input
 
     _block_1 = small_conv(32, _input_1, count=3, block=1)
-    _res_1 = small_res(32, _block_1, block=1)
+    _res_1_1 = small_res(32, _block_1, block=1.1)
     _bridge_1 = small_bridge(32, _input_1, block=1)
-    _concat_1 = layers.concatenate([_res_1, _bridge_1], axis=1, name='concat_1')
+    _concat_1 = layers.concatenate([_res_1_1, _bridge_1], axis=1, name='concat_1')
+    _res_1_2 = small_res(64, _concat_1, block=1.2)
 
-    _block_2 = small_conv(64, _concat_1, count=3, block=2)
-    _res_2 = small_res(64, _block_2, block=2)
+    _block_2 = small_conv(64, _res_1_2, count=3, block=2)
+    _res_2_1 = small_res(64, _block_2, block=2.1)
     _bridge_2 = small_bridge(64, _concat_1, block=2)
-    _concat_2 = layers.concatenate([_res_2, _bridge_2], axis=1, name='concat_2')
+    _concat_2 = layers.concatenate([_res_2_1, _bridge_2], axis=1, name='concat_2')
+    _res_2_2 = small_res(128, _concat_2, block=2.2)
 
-    _glb_pool_1 = GlobalMaxPooling2D()(_concat_2)
+    _glb_pool_1 = GlobalMaxPooling2D()(_res_2_2)
 
     _dense_1 = Dense(64, kernel_regularizer=l2(1e-4), name="dense_1")(_glb_pool_1)
     _dense_1 = BatchNormalization(axis=1, name="dense_1_bn_1")(_dense_1)
